@@ -3,75 +3,43 @@
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width = 1640;
+canvas.height = 924;
 
 const gravity = 0.5;
 
-class Player {
-    constructor() {
-        this.position = {
-            x: 100,
-            y: 100
-        };
-        this.velocity = {
-            x: 0,
-            y: 0
-        };
-        this.width = 30;
-        this.heigth = 30;
-    }
-
-    draw() {
-        context.fillStyle = '#6181ed';
-        context.fillRect(this.position.x, this.position.y, this.width, this.heigth);
-    }
-
-    update() {
-        this.draw();
-
-        this.position.x += this.velocity.x;
-        this.position.y += this.velocity.y;
-
-        //Gravity
-        if (this.position.y + this.heigth + this.velocity.y <= canvas.height) {
-            this.velocity.y += gravity;
-        }
-        else {
-            this.velocity.y = 0;
-        }
-    }
-}
-
-class Platform {
-    constructor({ x, y }) {
-        this.position = {
-            x,
-            y
-        };
-        this.width = 200;
-        this.height = 20;
-    }
-
-    draw() {
-        context.fillRect(this.position.x, this.position.y, this.width, this.height);
-    }
-}
-
 const player = new Player();
 
+const background = new Sprite({
+    position: {
+        x: -3,
+        y: -5
+    },
+    imgSrc: './assets/background.png',
+    scale: 1.3
+});
+
 const platforms = [
-    new Platform({
-        x: 500, 
-        y: 700
+    new Sprite({
+        position: {
+            x: -1, 
+            y: 800,
+        },
+        imgSrc: './assets/platform.png'
     }),
-    new Platform({
-        x: 1300, 
-        y: 350
+    new Sprite({
+        position: {
+            x: 1000, 
+            y: 350
+        },
+        imgSrc: './assets/platform.png'
     }),
-    new Platform({
-        x: 2100, 
-        y: 500
+    new Sprite({
+        position: {
+            x: 2100, 
+            y: 500
+        },
+        imgSrc: './assets/platform.png'
     })
 ];
 
@@ -94,6 +62,9 @@ window.addEventListener('keydown', ({ keyCode }) => {
             break;
         case 87: 
             console.log('up');
+            if (event.repeat) { 
+                return; 
+            }
             player.velocity.y -= 20;
             break;
         case 83: 
@@ -115,11 +86,13 @@ window.addEventListener('keyup', ({ keyCode }) => {
 
 function animate() {
     requestAnimationFrame(animate);
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    player.update();
+    context.fillStyle = '#ffffff';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    background.update();
     platforms.forEach(platform => {
         platform.draw();
     });
+    player.update();
 
     if (keys.left.pressed && player.position.x > 100) {
         player.velocity.x = -5;
