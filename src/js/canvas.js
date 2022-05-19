@@ -1,5 +1,7 @@
 'use strict';
 
+import platform from '../assets/platform.png';
+
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
 
@@ -8,38 +10,77 @@ canvas.height = 924;
 
 const gravity = 0.5;
 
+class Player {
+    constructor() {
+        this.position = {
+            x: 100,
+            y: 100
+        };
+        this.velocity = {
+            x: 0,
+            y: 0
+        };
+        this.width = 30;
+        this.heigth = 30;
+    }
+
+    draw() {
+        context.fillStyle = '#6181ed';
+        context.fillRect(this.position.x, this.position.y, this.width, this.heigth);
+    }
+
+    update() {
+        this.draw();
+
+        this.position.x += this.velocity.x;
+        this.position.y += this.velocity.y;
+
+        //Gravity
+        if (this.position.y + this.heigth + this.velocity.y <= canvas.height) {
+            this.velocity.y += gravity;
+        }
+        else {
+            this.velocity.y = 0;
+        }
+    }
+}
+
+class Platform {
+    constructor({ x, y, image }) {
+        this.position = {
+            x,
+            y
+        };
+        this.image = image;
+        this.width = image.width;
+        this.height = image.height;
+    }
+
+    draw() {
+        context.drawImage(this.image, this.position.x, this.position.y);
+    }
+}
+
+const image = new Image();
+image.src = platform;
+
 const player = new Player();
 
-const background = new Sprite({
-    position: {
-        x: -3,
-        y: -5
-    },
-    imgSrc: './assets/background.png',
-    scale: 1.3
-});
-
 const platforms = [
-    new Sprite({
-        position: {
-            x: -1, 
-            y: 800,
-        },
-        imgSrc: './assets/platform.png'
+    new Platform({
+        x: -1, 
+        y: 800,
+        image
     }),
-    new Sprite({
-        position: {
-            x: 1000, 
-            y: 350
-        },
-        imgSrc: './assets/platform.png'
+    new Platform({
+        x: image.width - 3, 
+        y: 800,
+        image
     }),
-    new Sprite({
-        position: {
-            x: 2100, 
-            y: 500
-        },
-        imgSrc: './assets/platform.png'
+    new Platform({
+        x: 2100, 
+        y: 500,
+        image
     })
 ];
 
@@ -61,14 +102,10 @@ window.addEventListener('keydown', ({ keyCode }) => {
             keys.right.pressed = true;
             break;
         case 87: 
-            console.log('up');
             if (event.repeat) { 
                 return; 
             }
             player.velocity.y -= 20;
-            break;
-        case 83: 
-            console.log('down');
             break;
     }
 });
@@ -88,7 +125,6 @@ function animate() {
     requestAnimationFrame(animate);
     context.fillStyle = '#ffffff';
     context.fillRect(0, 0, canvas.width, canvas.height);
-    background.update();
     platforms.forEach(platform => {
         platform.draw();
     });
