@@ -236,6 +236,7 @@ var Player = /*#__PURE__*/function () {
     };
     this.width = 30;
     this.heigth = 30;
+    this.speed = 6;
   }
 
   _createClass(Player, [{
@@ -269,38 +270,8 @@ var background = new Sprite({
   image: createImage(_assets_background_png__WEBPACK_IMPORTED_MODULE_0__["default"]),
   scale: 1.3
 });
-var hills = [new Sprite({
-  position: {
-    x: 0,
-    y: 225
-  },
-  image: hill
-})];
-var platforms = [new Sprite({
-  position: {
-    x: -1,
-    y: 800
-  },
-  image: platform
-}), new Sprite({
-  position: {
-    x: platform.width - 3,
-    y: 800
-  },
-  image: platform
-}), new Sprite({
-  position: {
-    x: platform.width * 2 + 300,
-    y: 800
-  },
-  image: platform
-}), new Sprite({
-  position: {
-    x: platform.width * 4,
-    y: 500
-  },
-  image: platform
-})];
+var hills = [];
+var platforms = [];
 var keys = {
   left: {
     pressed: false
@@ -359,7 +330,8 @@ function init() {
       x: 0,
       y: 225
     },
-    image: hill
+    image: hill,
+    scale: 1.2
   })];
   platforms = [new Sprite({
     position: {
@@ -381,8 +353,50 @@ function init() {
     image: platform
   }), new Sprite({
     position: {
-      x: platform.width * 4,
+      x: platform.width * 3 + 450,
       y: 500
+    },
+    image: platform
+  }), new Sprite({
+    position: {
+      x: platform.width * 5,
+      y: 800
+    },
+    image: platform
+  }), new Sprite({
+    position: {
+      x: platform.width * 6 - 3,
+      y: 800
+    },
+    image: platform
+  }), new Sprite({
+    position: {
+      x: platform.width * 5 + 250,
+      y: 200
+    },
+    image: platform
+  }), new Sprite({
+    position: {
+      x: platform.width * 7 + 200,
+      y: 500
+    },
+    image: platform
+  }), new Sprite({
+    position: {
+      x: platform.width * 8 + 400,
+      y: 300
+    },
+    image: platform
+  }), new Sprite({
+    position: {
+      x: platform.width * 10 + 200,
+      y: 800
+    },
+    image: platform
+  }), new Sprite({
+    position: {
+      x: platform.width * 11 - 165,
+      y: 800
     },
     image: platform
   })];
@@ -401,28 +415,28 @@ function animate() {
   });
   player.update();
 
-  if (keys.left.pressed && player.position.x > 100) {
-    player.velocity.x = -5;
+  if (keys.left.pressed && player.position.x > 100 || keys.left.pressed && scrollOffset === 0 && player.position.x > 0) {
+    player.velocity.x = -player.speed;
   } else if (keys.right.pressed && player.position.x < 400) {
-    player.velocity.x = 5;
+    player.velocity.x = player.speed;
   } else {
     player.velocity.x = 0;
 
-    if (keys.left.pressed) {
-      scrollOffset -= 5;
+    if (keys.left.pressed && scrollOffset > 0) {
+      scrollOffset -= player.speed;
       hills.forEach(function (hill) {
-        hill.position.x += 3;
+        hill.position.x += player.speed * 0.66;
       });
       platforms.forEach(function (platform) {
-        platform.position.x += 5;
+        platform.position.x += player.speed;
       });
     } else if (keys.right.pressed) {
-      scrollOffset += 5;
+      scrollOffset += player.speed;
       hills.forEach(function (hill) {
-        hill.position.x -= 3;
+        hill.position.x -= player.speed * 0.66;
       });
       platforms.forEach(function (platform) {
-        platform.position.x -= 5;
+        platform.position.x -= player.speed;
       });
     }
   } //Platform Collision Detection
@@ -445,6 +459,7 @@ function animate() {
   }
 }
 
+init();
 animate();
 
 /***/ })
